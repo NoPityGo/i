@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Без Жалости 3D</title>
+<title>Без Жалости!</title>
 <style>
     body { margin: 0; overflow: hidden; background: #000; }
     .ui {
@@ -29,6 +29,8 @@
         border-radius: 8px;
         box-shadow: 0 0 20px #ff0000;
         transition: 0.3s;
+        cursor: pointer;
+        display: inline-block;
     }
     .btn:hover {
         background: #fff;
@@ -43,19 +45,30 @@
         80% { transform: translate(2px, -2px); }
         100% { transform: translate(0); }
     }
+    /* Эффект разбитого стекла */
+    .broken-glass {
+        position: fixed;
+        top: 0; left: 0;
+        width: 100%; height: 100%;
+        background: url('https://i.ibb.co/6P3d9jz/broken-glass.png') center/cover no-repeat;
+        pointer-events: none;
+        opacity: 0;
+        transition: opacity 0.3s ease;
+        z-index: 999;
+    }
 </style>
 </head>
 <body>
 <div class="ui">
     <h1>Без Жалости!</h1>
-    <a class="btn" href="https://t.me/bezjal" target="_blank">🔥 Войти в треш 🔥</a>
+    <a class="btn" id="explodeBtn">💥 Взорвать экран 💥</a>
 </div>
+<div class="broken-glass" id="glass"></div>
 
 <script src="https://cdn.jsdelivr.net/npm/three@0.157.0/build/three.min.js"></script>
 
 <script>
-let scene, camera, renderer, skullMesh, clock, sparks = [];
-
+let scene, camera, renderer, skullMesh, clock;
 init();
 animate();
 
@@ -74,60 +87,31 @@ function init() {
     clock = new THREE.Clock();
 
     // Свет
-    const pointLight = new THREE.PointLight(0xff2200, 3, 20);
-    pointLight.position.set(0, 2, 3);
-    scene.add(pointLight);
+    const light = new THREE.PointLight(0xff0000, 2, 20);
+    light.position.set(0, 2, 3);
+    scene.add(light);
 
-    const ambient = new THREE.AmbientLight(0x660000);
+    const ambient = new THREE.AmbientLight(0x333333);
     scene.add(ambient);
 
-    // Череп (замена: красный куб)
-    const geometry = new THREE.BoxGeometry(2, 2, 2);
-    const material = new THREE.MeshStandardMaterial({ color: 0xff0000, metalness: 0.5, roughness: 0.2 });
-    skullMesh = new THREE.Mesh(geometry, material);
-    skullMesh.position.set(0, 1, 0);
-    scene.add(skullMesh);
-
-    // Огненная плоскость
-    const fireGeo = new THREE.PlaneGeometry(4, 5);
-    const fireMat = new THREE.MeshBasicMaterial({ color: 0xff3300, transparent: true, opacity: 0.4 });
-    const fire = new THREE.Mesh(fireGeo, fireMat);
-    fire.position.set(0, -0.5, -2);
-    scene.add(fire);
-
-    // Искры
-    for (let i = 0; i < 200; i++) {
-        const sparkGeo = new THREE.SphereGeometry(0.05, 6, 6);
-        const sparkMat = new THREE.MeshBasicMaterial({ color: 0xffff66 });
-        const spark = new THREE.Mesh(sparkGeo, sparkMat);
-        resetSpark(spark);
-        scene.add(spark);
-        sparks.push(spark);
-    }
-
+    // Загружаем череп как PNG-плоскость
+    const loader = new THREE.TextureLoader();
+    loader.load('https://i.ibb.co/1sHrVnB/skull.png', (texture) => {
+        const geo = new THREE.PlaneGeometry(3, 3);
+        const mat = new THREE.MeshBasicMaterial({ map: texture, transparent: true });
+        skullMesh = new THREE.Mesh(geo, mat);
+        skullMesh.position.set(0, 1, 0);
+        scene.add(skullMesh);
+    });
+    
     window.addEventListener('resize', onWindowResize);
-}
-
-function resetSpark(spark) {
-    spark.position.set((Math.random() - 0.5) * 4, -1, (Math.random() - 0.5) * 4);
-    spark.userData.speed = Math.random() * 0.05 + 0.02;
 }
 
 function animate() {
     requestAnimationFrame(animate);
-
-    const delta = clock.getDelta();
-
-    // Череп вращается и пульсирует
-    skullMesh.rotation.y += 0.01;
-    skullMesh.scale.setScalar(1 + Math.sin(clock.elapsedTime * 3) * 0.05);
-
-    // Искры поднимаются вверх
-    sparks.forEach(spark => {
-        spark.position.y += spark.userData.speed;
-        if (spark.position.y > 3) resetSpark(spark);
-    });
-
+    if (skullMesh) {
+        skullMesh.rotation.y += 0.01;
+    }
     renderer.render(scene, camera);
 }
 
@@ -136,6 +120,30 @@ function onWindowResize() {
     camera.updateProjectionMatrix();
     renderer.setSize(window.innerWidth, window.innerHeight);
 }
+
+// Анимация вылета + взрыв
+document.getElementById('explodeBtn').addEventListener('click', () => {
+    if (!skullMesh) return;
+
+    // Эффект разбитого экрана
+    const glass = document.getElementById('glass');
+    glass.style.opacity = '1';
+
+    // Вылет черепа
+    let t = 0;
+    const interval = setInterval(() => {
+        t += 0.05;
+        skullMesh.position.z -= 0.5;
+        skullMesh.scale.multiplyScalar(1.1);
+
+        if (t > 2) {
+            clearInterval(interval);
+            setTimeout(() => { glass.style.opacity = '0'; }, 1500);
+            skullMesh.position.set(0, 1, 0);
+            skullMesh.scale.set(1, 1, 1);
+        }
+    }, 30);
+});
 </script>
 </body>
 </html>
