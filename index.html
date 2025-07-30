@@ -2,6 +2,7 @@
 <html lang="ru">
 <head>
   <meta charset="UTF-8">
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="description" content="Без жалости! — трэш, правда, эмоции без фильтра. Заходи, если готов.">
   <title>Без жалости!</title>
@@ -139,28 +140,36 @@
 </head>
 <body>
 
+  <!-- ✅ Верификационный код (скрыт от пользователя, но доступен для поисковых ботов) -->
+  <div style="display: none;">Verification: e7219af5667aa80c</div>
+
+  <!-- 🔊 Звук щелчка -->
   <audio id="clickSound" preload="auto">
     <source src="https://cdn.pixabay.com/audio/2021/08/04/audio_71b8f9f8db.mp3" type="audio/mpeg">
     Ваш браузер не поддерживает воспроизведение звуков.
   </audio>
 
+  <!-- 🔥 Анимация пламени -->
   <div class="flame"></div>
 
+  <!-- 🧨 Контент -->
   <div class="container">
     <h1>Без жалости!</h1>
-    <p>Тут трэш, правда, жесткач и уличная реальность. Новости, которые бьют в лоб. Только для тех, у кого нервы не из простых.</p>
+    <p>Тут трэш, правда, жесткач и уличная реальность. Новости, которые бьют в лоб. Только для тех, у кого нервы не из ваты.</p>
     <a class="button" href="https://t.me/bezjal" target="_blank" onclick="playClick()">Зайти в Telegram</a>
   </div>
 
+  <!-- 👣 Футер -->
   <footer>© 2025 Без жалости. Время правды.</footer>
 
+  <!-- ⚙️ Скрипт: звук и вибрация -->
   <script>
     function playClick() {
       const clickSound = document.getElementById('clickSound');
       if (clickSound) clickSound.play();
 
       if (navigator.vibrate) {
-        navigator.vibrate(100); // вибрация 100 мс
+        navigator.vibrate(100); // вибрация на 100 мс
       }
     }
   </script>
