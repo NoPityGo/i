@@ -5,59 +5,28 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Без Жалости!</title>
 
-<!-- Подключаем шрифт -->
-<link href="https://fonts.googleapis.com/css2?family=Russo+One&display=swap" rel="stylesheet">
-
 <style>
-    /* Общие стили */
     body {
         margin: 0;
         padding: 0;
         height: 100vh;
-        background: #000;
+        background: #000 url('https://i.ibb.co/W2Hjz7N/skull.jpg') no-repeat center center/cover;
         display: flex;
         flex-direction: column;
         justify-content: center;
         align-items: center;
         overflow: hidden;
-        font-family: 'Russo One', sans-serif;
+        font-family: Impact, Haettenschweiler, 'Arial Black', sans-serif;
+        position: relative;
     }
 
-    /* Эффект дыма (тонкий) */
-    .smoke {
-        position: fixed;
+    /* Затемняющий слой */
+    .overlay {
+        position: absolute;
         top: 0; left: 0;
         width: 100%; height: 100%;
-        background: url('https://i.ibb.co/BC2dMHv/smoke.png') repeat;
-        background-size: 800px;
-        opacity: 0.06;
+        background: rgba(0,0,0,0.6);
         z-index: 0;
-        animation: moveSmoke 80s linear infinite;
-    }
-
-    @keyframes moveSmoke {
-        from { background-position: 0 0; }
-        to { background-position: 5000px 5000px; }
-    }
-
-    /* Красные огни */
-    .glow {
-        position: absolute;
-        width: 300px;
-        height: 300px;
-        background: radial-gradient(circle, rgba(255,0,0,0.3), transparent 70%);
-        border-radius: 50%;
-        animation: float 10s ease-in-out infinite alternate;
-        z-index: 0;
-    }
-
-    .glow:nth-child(1) { top: 10%; left: 20%; animation-delay: 0s; }
-    .glow:nth-child(2) { top: 60%; left: 70%; animation-delay: 3s; }
-    .glow:nth-child(3) { top: 30%; left: 50%; animation-delay: 6s; }
-
-    @keyframes float {
-        0% { transform: translate(0, 0); }
-        100% { transform: translate(50px, 50px); }
     }
 
     /* Заголовок */
@@ -108,17 +77,14 @@
 
     /* Адаптив */
     @media (max-width: 768px) {
-        h1 { font-size: 2.5rem; }
+        h1 { font-size: 2.5rem; text-align: center; }
         .btn { font-size: 1.5rem; padding: 15px 30px; }
     }
 </style>
 </head>
 <body>
 
-<div class="smoke"></div>
-<div class="glow"></div>
-<div class="glow"></div>
-<div class="glow"></div>
+<div class="overlay"></div>
 
 <h1>Без Жалости!</h1>
 <button class="btn" onclick="playSoundAndRedirect()">🔥 Войти в треш! 🔥</button>
@@ -131,8 +97,7 @@
 <script>
 function playSoundAndRedirect() {
     const sound = document.getElementById('notifSound');
-    sound.currentTime = 0;
-    sound.play().catch(err => console.log("Автоплей заблокирован:", err));
+    sound.play().catch(err => console.log("Звук не воспроизведен:", err));
 
     setTimeout(() => {
         window.location.href = 'https://t.me/bezjal';
