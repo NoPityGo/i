@@ -5,23 +5,50 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Без Жалости!</title>
 <style>
-    body { margin: 0; overflow: hidden; background: #000; }
-    .ui {
+    body {
+        margin: 0;
+        overflow: hidden;
+        background: radial-gradient(circle, #000000 60%, #111111);
+        font-family: Arial, sans-serif;
+    }
+
+    .container {
         position: absolute;
-        top: 20px;
+        top: 50%;
         left: 50%;
-        transform: translateX(-50%);
+        transform: translate(-50%, -50%);
         text-align: center;
         z-index: 10;
     }
+
     h1 {
         color: #ff0000;
         font-size: 3rem;
         text-shadow: 0 0 25px #ff0000, 0 0 50px #ff0000;
-        margin-bottom: 10px;
+        margin-bottom: 15px;
+        animation: glow 2s infinite alternate;
     }
+
+    @keyframes glow {
+        0% { text-shadow: 0 0 10px #ff0000; }
+        100% { text-shadow: 0 0 40px #ff0000, 0 0 80px #ff0000; }
+    }
+
+    .skull {
+        width: 300px;
+        max-width: 80vw;
+        animation: float 4s ease-in-out infinite;
+    }
+
+    @keyframes float {
+        0%, 100% { transform: translateY(0px); }
+        50% { transform: translateY(-20px); }
+    }
+
     .btn {
-        padding: 15px 30px;
+        display: inline-block;
+        margin-top: 20px;
+        padding: 15px 35px;
         font-size: 1.4rem;
         color: #fff;
         background: #ff0000;
@@ -29,14 +56,16 @@
         border-radius: 8px;
         box-shadow: 0 0 20px #ff0000;
         transition: 0.3s;
-        cursor: pointer;
-        display: inline-block;
+        position: relative;
+        overflow: hidden;
     }
+
     .btn:hover {
         background: #fff;
         color: #ff0000;
         animation: vibrate 0.3s linear infinite;
     }
+
     @keyframes vibrate {
         0% { transform: translate(0); }
         20% { transform: translate(-2px, 2px); }
@@ -45,105 +74,61 @@
         80% { transform: translate(2px, -2px); }
         100% { transform: translate(0); }
     }
-    /* Эффект разбитого стекла */
-    .broken-glass {
+
+    /* Эффект дыма (фон) */
+    .smoke {
         position: fixed;
         top: 0; left: 0;
         width: 100%; height: 100%;
-        background: url('https://i.ibb.co/6P3d9jz/broken-glass.png') center/cover no-repeat;
-        pointer-events: none;
-        opacity: 0;
-        transition: opacity 0.3s ease;
-        z-index: 999;
+        background: url('https://i.ibb.co/bgsT7Sk/smoke.png') repeat;
+        opacity: 0.05;
+        animation: moveSmoke 60s linear infinite;
+        z-index: 1;
+    }
+
+    @keyframes moveSmoke {
+        0% { background-position: 0 0; }
+        100% { background-position: 10000px 10000px; }
+    }
+
+    /* Искры */
+    .spark {
+        position: absolute;
+        width: 4px;
+        height: 4px;
+        background: #ffcc00;
+        border-radius: 50%;
+        box-shadow: 0 0 10px #ffcc00;
+        animation: sparkFly 3s linear infinite;
+    }
+
+    @keyframes sparkFly {
+        0% { transform: translateY(0) scale(1); opacity: 1; }
+        100% { transform: translateY(-500px) scale(0.1); opacity: 0; }
     }
 </style>
 </head>
 <body>
-<div class="ui">
-    <h1>Без Жалости!</h1>
-    <a class="btn" id="explodeBtn">💥 Взорвать экран 💥</a>
-</div>
-<div class="broken-glass" id="glass"></div>
+<div class="smoke"></div>
 
-<script src="https://cdn.jsdelivr.net/npm/three@0.157.0/build/three.min.js"></script>
+<div class="container">
+    <h1>Без Жалости!</h1>
+    <!-- Череп из твоего файла -->
+    <img class="skull" src="IMG_6498.PNG" alt="Череп">
+    <a class="btn" href="https://t.me/bezjal" target="_blank">🔥 Войти в треш 🔥</a>
+</div>
 
 <script>
-let scene, camera, renderer, skullMesh, clock;
-init();
-animate();
-
-function init() {
-    scene = new THREE.Scene();
-
-    // Камера
-    camera = new THREE.PerspectiveCamera(60, window.innerWidth / window.innerHeight, 0.1, 100);
-    camera.position.set(0, 1.5, 6);
-
-    // Рендер
-    renderer = new THREE.WebGLRenderer({ antialias: true });
-    renderer.setSize(window.innerWidth, window.innerHeight);
-    document.body.appendChild(renderer.domElement);
-
-    clock = new THREE.Clock();
-
-    // Свет
-    const light = new THREE.PointLight(0xff0000, 2, 20);
-    light.position.set(0, 2, 3);
-    scene.add(light);
-
-    const ambient = new THREE.AmbientLight(0x333333);
-    scene.add(ambient);
-
-    // Загружаем череп как PNG-плоскость
-    const loader = new THREE.TextureLoader();
-    loader.load('https://i.ibb.co/1sHrVnB/skull.png', (texture) => {
-        const geo = new THREE.PlaneGeometry(3, 3);
-        const mat = new THREE.MeshBasicMaterial({ map: texture, transparent: true });
-        skullMesh = new THREE.Mesh(geo, mat);
-        skullMesh.position.set(0, 1, 0);
-        scene.add(skullMesh);
-    });
-    
-    window.addEventListener('resize', onWindowResize);
+// Генерация искр
+for (let i = 0; i < 50; i++) {
+    const spark = document.createElement('div');
+    spark.className = 'spark';
+    spark.style.left = Math.random() * window.innerWidth + 'px';
+    spark.style.top = window.innerHeight + 'px';
+    spark.style.animationDuration = (Math.random() * 3 + 2) + 's';
+    spark.style.animationDelay = (Math.random() * 5) + 's';
+    document.body.appendChild(spark);
 }
-
-function animate() {
-    requestAnimationFrame(animate);
-    if (skullMesh) {
-        skullMesh.rotation.y += 0.01;
-    }
-    renderer.render(scene, camera);
-}
-
-function onWindowResize() {
-    camera.aspect = window.innerWidth / window.innerHeight;
-    camera.updateProjectionMatrix();
-    renderer.setSize(window.innerWidth, window.innerHeight);
-}
-
-// Анимация вылета + взрыв
-document.getElementById('explodeBtn').addEventListener('click', () => {
-    if (!skullMesh) return;
-
-    // Эффект разбитого экрана
-    const glass = document.getElementById('glass');
-    glass.style.opacity = '1';
-
-    // Вылет черепа
-    let t = 0;
-    const interval = setInterval(() => {
-        t += 0.05;
-        skullMesh.position.z -= 0.5;
-        skullMesh.scale.multiplyScalar(1.1);
-
-        if (t > 2) {
-            clearInterval(interval);
-            setTimeout(() => { glass.style.opacity = '0'; }, 1500);
-            skullMesh.position.set(0, 1, 0);
-            skullMesh.scale.set(1, 1, 1);
-        }
-    }, 30);
-});
 </script>
 </body>
 </html>
